@@ -1,0 +1,67 @@
+<div class="translation-display">
+  <div *ngIf="translations.length > 0; else noTranslations" class="translation-list">
+    
+    <div *ngFor="let translation of translations; let i = index" 
+         class="translation-item transcription-card">
+      
+      <!-- Translation Header -->
+      <div class="translation-header">
+        <div class="language-info">
+          <mat-chip-listbox>
+            <mat-chip>{{ getLanguageName(translation.sourceLanguage) }}</mat-chip>
+            <mat-icon>arrow_forward</mat-icon>
+            <mat-chip color="primary" selected>{{ getLanguageName(translation.targetLanguage) }}</mat-chip>
+          </mat-chip-listbox>
+        </div>
+        <div class="timestamp">
+          <mat-icon>schedule</mat-icon>
+          <span>{{ getRelativeTime(translation.timestamp) }}</span>
+        </div>
+      </div>
+      
+      <mat-divider></mat-divider>
+      
+      <!-- Original Text -->
+      <div class="text-section original-text">
+        <div class="text-label">
+          <mat-icon>record_voice_over</mat-icon>
+          <span>Texto original:</span>
+        </div>
+        <p class="text-content">{{ translation.originalText }}</p>
+        <button mat-icon-button 
+                (click)="copyToClipboard(translation.originalText)"
+                matTooltip="Copiar texto original"
+                class="copy-button">
+          <mat-icon>content_copy</mat-icon>
+        </button>
+      </div>
+      
+      <mat-divider></mat-divider>
+      
+      <!-- Translated Text -->
+      <div class="text-section translated-text">
+        <div class="text-label">
+          <mat-icon>translate</mat-icon>
+          <span>Traducción:</span>
+        </div>
+        <p class="text-content highlighted">{{ translation.translatedText }}</p>
+        <button mat-icon-button 
+                (click)="copyToClipboard(translation.translatedText)"
+                matTooltip="Copiar traducción"
+                class="copy-button">
+          <mat-icon>content_copy</mat-icon>
+        </button>
+      </div>
+      
+    </div>
+    
+  </div>
+  
+  <ng-template #noTranslations>
+    <div class="empty-state">
+      <mat-icon>translate</mat-icon>
+      <p>No hay traducciones aún. Las traducciones aparecerán aquí automáticamente.</p>
+    </div>
+  </ng-template>
+  
+</div>

@@ -1,0 +1,223 @@
+.audio-recorder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  padding: 20px;
+}
+
+.audio-visualizer {
+  display: flex;
+  align-items: end;
+  justify-content: center;
+  height: 60px;
+  gap: 3px;
+  margin-bottom: 20px;
+  
+  .audio-bar {
+    width: 4px;
+    background: linear-gradient(to top, #3f51b5, #7986cb);
+    border-radius: 2px;
+    min-height: 5px;
+    animation: bounce 0.5s infinite alternate;
+    transition: height 0.1s ease;
+  }
+  
+  .audio-bar:nth-child(odd) {
+    animation-delay: 0.1s;
+  }
+  
+  .audio-bar:nth-child(even) {
+    animation-delay: 0.2s;
+  }
+}
+
+@keyframes bounce {
+  from { transform: scaleY(0.8); }
+  to { transform: scaleY(1.2); }
+}
+
+.recording-controls {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  
+  button[mat-fab] {
+    width: 80px;
+    height: 80px;
+    transition: all 0.3s ease;
+    
+    &.recording-indicator {
+      animation: pulse 2s infinite;
+    }
+    
+    &:hover:not(:disabled) {
+      transform: scale(1.1);
+    }
+    
+    &:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+    
+    mat-icon {
+      font-size: 36px;
+      width: 36px;
+      height: 36px;
+    }
+  }
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(244, 67, 54, 0.7);
+  }
+  70% {
+    transform: scale(1.05);
+    box-shadow: 0 0 0 15px rgba(244, 67, 54, 0);
+  }
+  100% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(244, 67, 54, 0);
+  }
+}
+
+.status-text {
+  text-align: center;
+  min-height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  
+  > div {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    
+    mat-icon {
+      font-size: 24px;
+      width: 24px;
+      height: 24px;
+    }
+    
+    span {
+      font-size: 14px;
+      font-weight: 500;
+    }
+  }
+  
+  .disconnected-message {
+    color: #f44336;
+  }
+  
+  .ready-message {
+    color: #4caf50;
+  }
+  
+  .recording-message {
+    color: #f44336;
+    
+    .recording-icon {
+      animation: blink 1s infinite;
+    }
+    
+    .recording-hint {
+      font-size: 12px;
+      color: #666;
+      margin-top: 4px;
+    }
+  }
+}
+
+@keyframes blink {
+  0%, 50% { opacity: 1; }
+  51%, 100% { opacity: 0.3; }
+}
+
+.audio-level-container {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  max-width: 300px;
+  
+  .level-label,
+  .level-value {
+    font-size: 12px;
+    color: #666;
+    white-space: nowrap;
+  }
+  
+  .audio-level-bar {
+    flex: 1;
+    height: 8px;
+    background: #e0e0e0;
+    border-radius: 4px;
+    overflow: hidden;
+    
+    .audio-level-fill {
+      height: 100%;
+      background: linear-gradient(to right, #4caf50, #ffeb3b, #f44336);
+      transition: width 0.1s ease;
+      border-radius: 4px;
+    }
+  }
+}
+
+.instructions {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  max-width: 400px;
+  text-align: left;
+  padding: 16px;
+  background: #f5f5f5;
+  border-radius: 8px;
+  border-left: 4px solid #3f51b5;
+  
+  mat-icon {
+    color: #3f51b5;
+    margin-top: 2px;
+  }
+  
+  p {
+    margin: 0;
+    font-size: 14px;
+    line-height: 1.5;
+    color: #333;
+  }
+}
+
+// Responsive design
+@media (max-width: 480px) {
+  .audio-recorder {
+    padding: 10px;
+  }
+  
+  .recording-controls button[mat-fab] {
+    width: 60px;
+    height: 60px;
+    
+    mat-icon {
+      font-size: 28px;
+      width: 28px;
+      height: 28px;
+    }
+  }
+  
+  .audio-visualizer {
+    height: 40px;
+    
+    .audio-bar {
+      width: 3px;
+    }
+  }
+  
+  .instructions {
+    padding: 12px;
+    font-size: 13px;
+  }
+}

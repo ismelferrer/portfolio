@@ -1,0 +1,59 @@
+/* You can add global styles to this file, and also import other style files */
+@import '~@angular/material/prebuilt-themes/indigo-pink.css';
+
+html, body { 
+  height: 100%; 
+  margin: 0; 
+  font-family: Roboto, "Helvetica Neue", sans-serif; 
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.recording-indicator {
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.1);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+.transcription-card {
+  margin: 10px 0;
+  transition: all 0.3s ease;
+}
+
+.transcription-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+}
+
+.audio-visualizer {
+  display: flex;
+  align-items: end;
+  height: 50px;
+  gap: 2px;
+}
+
+.audio-bar {
+  width: 4px;
+  background: #3f51b5;
+  min-height: 5px;
+  animation: bounce 1s infinite alternate;
+}
+
+@keyframes bounce {
+  from { height: 5px; }
+  to { height: 50px; }
+}

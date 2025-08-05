@@ -1,0 +1,134 @@
+<div class="transcriptor-container">
+  
+  <!-- Connection Status -->
+  <mat-card class="status-card">
+    <mat-card-header>
+      <mat-card-title>
+        <mat-icon [color]="isConnected ? 'primary' : 'warn'">
+          {{ isConnected ? 'wifi' : 'wifi_off' }}
+        </mat-icon>
+        Estado de Conexión
+      </mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+      <p [class]="isConnected ? 'connected' : 'disconnected'">
+        {{ isConnected ? 'Conectado al servidor' : 'Desconectado del servidor' }}
+      </p>
+    </mat-card-content>
+  </mat-card>
+
+  <!-- Language Selection -->
+  <mat-card class="language-card">
+    <mat-card-header>
+      <mat-card-title>
+        <mat-icon>translate</mat-icon>
+        Configuración de Idiomas
+      </mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+      <div class="language-selectors">
+        <mat-form-field appearance="outline">
+          <mat-label>Idioma de origen</mat-label>
+          <mat-select [(value)]="selectedSourceLanguage">
+            <mat-option value="auto">Detectar automáticamente</mat-option>
+            <mat-option *ngFor="let lang of languages" [value]="lang.code">
+              {{ lang.name }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Traducir a</mat-label>
+          <mat-select [(value)]="selectedTargetLanguage" (selectionChange)="onTargetLanguageChange()">
+            <mat-option *ngFor="let lang of languages" [value]="lang.code">
+              {{ lang.name }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+    </mat-card-content>
+  </mat-card>
+
+  <!-- Audio Recorder -->
+  <mat-card class="recorder-card">
+    <mat-card-header>
+      <mat-card-title>
+        <mat-icon>mic</mat-icon>
+        Grabación de Audio
+      </mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+      <app-audio-recorder 
+        [isConnected]="isConnected"
+        [isRecording]="isRecording"
+        (toggleRecording)="toggleRecording()">
+      </app-audio-recorder>
+    </mat-card-content>
+  </mat-card>
+
+  <!-- Results Display -->
+  <div class="results-container">
+    
+    <!-- Transcriptions -->
+    <mat-card class="results-card">
+      <mat-card-header>
+        <mat-card-title>
+          <mat-icon>record_voice_over</mat-icon>
+          Transcripciones
+          <span class="count-badge" *ngIf="transcriptions.length > 0">
+            {{ transcriptions.length }}
+          </span>
+        </mat-card-title>
+        <div class="spacer"></div>
+        <button mat-icon-button (click)="clearAll()" *ngIf="transcriptions.length > 0">
+          <mat-icon>clear_all</mat-icon>
+        </button>
+      </mat-card-header>
+      <mat-card-content>
+        <div class="transcription-list" *ngIf="transcriptions.length > 0; else noTranscriptions">
+          <div *ngFor="let transcription of transcriptions; let i = index" 
+               class="transcription-item transcription-card">
+            <div class="transcription-header">
+              <mat-icon>record_voice_over</mat-icon>
+              <span class="timestamp">{{ transcription.timestamp | date:'short' }}</span>
+            </div>
+            <p class="transcription-text">{{ transcription.text }}</p>
+            <div class="actions">
+              <button mat-stroked-button color="primary" 
+                      (click)="translateText(transcription.text)">
+                <mat-icon>translate</mat-icon>
+                Traducir
+              </button>
+            </div>
+          </div>
+        </div>
+        <ng-template #noTranscriptions>
+          <div class="empty-state">
+            <mat-icon>mic_none</mat-icon>
+            <p>No hay transcripciones aún. Inicia una grabación para comenzar.</p>
+          </div>
+        </ng-template>
+      </mat-card-content>
+    </mat-card>
+
+    <!-- Translations -->
+    <mat-card class="results-card">
+      <mat-card-header>
+        <mat-card-title>
+          <mat-icon>translate</mat-icon>
+          Traducciones
+          <span class="count-badge" *ngIf="translations.length > 0">
+            {{ translations.length }}
+          </span>
+        </mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <app-translation-display 
+          [translations]="translations">
+        </app-translation-display>
+      </mat-card-content>
+    </mat-card>
+    
+  </div>
+
+</div>
