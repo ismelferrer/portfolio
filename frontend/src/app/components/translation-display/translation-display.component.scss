@@ -1,0 +1,190 @@
+.translation-display {
+  width: 100%;
+}
+
+.translation-list {
+  max-height: 350px;
+  overflow-y: auto;
+  
+  .translation-item {
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    padding: 16px;
+    margin-bottom: 12px;
+    transition: all 0.3s ease;
+    background: white;
+    
+    &:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+  }
+}
+
+.translation-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+  
+  .language-info {
+    mat-chip-listbox {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      
+      mat-chip {
+        font-size: 12px;
+      }
+      
+      mat-icon {
+        font-size: 16px;
+        color: #666;
+      }
+    }
+  }
+  
+  .timestamp {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    color: #666;
+    font-size: 12px;
+    
+    mat-icon {
+      font-size: 14px;
+    }
+  }
+}
+
+.text-section {
+  position: relative;
+  margin: 12px 0;
+  
+  .text-label {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 8px;
+    font-size: 12px;
+    font-weight: 500;
+    color: #666;
+    
+    mat-icon {
+      font-size: 16px;
+    }
+  }
+  
+  .text-content {
+    margin: 0;
+    padding: 12px;
+    background: #f8f9fa;
+    border-radius: 6px;
+    border-left: 3px solid #e0e0e0;
+    line-height: 1.5;
+    font-size: 14px;
+    position: relative;
+    padding-right: 48px; // Space for copy button
+    
+    &.highlighted {
+      background: #e3f2fd;
+      border-left-color: #2196f3;
+      font-weight: 500;
+    }
+  }
+  
+  .copy-button {
+    position: absolute;
+    top: 24px;
+    right: 8px;
+    opacity: 0.6;
+    transition: opacity 0.3s ease;
+    
+    &:hover {
+      opacity: 1;
+      background: rgba(0,0,0,0.04);
+    }
+    
+    mat-icon {
+      font-size: 16px;
+      width: 16px;
+      height: 16px;
+    }
+  }
+}
+
+.original-text {
+  .text-content {
+    color: #333;
+  }
+}
+
+.translated-text {
+  .text-content {
+    color: #1976d2;
+  }
+}
+
+.empty-state {
+  text-align: center;
+  padding: 40px 20px;
+  color: #666;
+  
+  mat-icon {
+    font-size: 48px;
+    width: 48px;
+    height: 48px;
+    margin-bottom: 16px;
+    opacity: 0.5;
+  }
+  
+  p {
+    margin: 0;
+    font-size: 14px;
+    line-height: 1.5;
+  }
+}
+
+// Responsive design
+@media (max-width: 480px) {
+  .translation-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+    
+    .timestamp {
+      align-self: flex-end;
+    }
+  }
+  
+  .text-section {
+    .copy-button {
+      position: static;
+      margin-top: 8px;
+      align-self: flex-end;
+    }
+    
+    .text-content {
+      padding-right: 12px;
+    }
+  }
+}
+
+// Custom scrollbar for translation list
+.translation-list::-webkit-scrollbar {
+  width: 6px;
+}
+
+.translation-list::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 3px;
+}
+
+.translation-list::-webkit-scrollbar-thumb {
+  background: #c1c1c1;
+  border-radius: 3px;
+}
+
+.translation-list::-webkit-scrollbar-thumb:hover {
+  background: #a8a8a8;
+}

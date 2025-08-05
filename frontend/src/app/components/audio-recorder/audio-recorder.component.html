@@ -1,0 +1,68 @@
+<div class="audio-recorder">
+  
+  <!-- Audio Visualizer -->
+  <div class="audio-visualizer" *ngIf="isRecording">
+    <div 
+      *ngFor="let height of getAudioBars()" 
+      class="audio-bar" 
+      [style.height.px]="Math.max(5, height)">
+    </div>
+  </div>
+  
+  <!-- Recording Controls -->
+  <div class="recording-controls">
+    
+    <!-- Main Record Button -->
+    <button 
+      mat-fab 
+      [color]="isRecording ? 'warn' : 'primary'"
+      [disabled]="!isConnected"
+      (click)="onToggleRecording()"
+      [class.recording-indicator]="isRecording">
+      
+      <mat-icon>{{ isRecording ? 'stop' : 'mic' }}</mat-icon>
+    </button>
+    
+    <!-- Status Text -->
+    <div class="status-text">
+      <div *ngIf="!isConnected" class="disconnected-message">
+        <mat-icon>wifi_off</mat-icon>
+        <span>Conectando al servidor...</span>
+      </div>
+      
+      <div *ngIf="isConnected && !isRecording" class="ready-message">
+        <mat-icon>mic</mat-icon>
+        <span>Presiona para iniciar grabación</span>
+      </div>
+      
+      <div *ngIf="isConnected && isRecording" class="recording-message">
+        <mat-icon class="recording-icon">fiber_manual_record</mat-icon>
+        <span>Grabando... {{ getRecordingTimeFormatted() }}</span>
+        <span class="recording-hint">Presiona para detener</span>
+      </div>
+    </div>
+    
+  </div>
+  
+  <!-- Audio Level Indicator -->
+  <div class="audio-level-container" *ngIf="isRecording">
+    <span class="level-label">Nivel de audio:</span>
+    <div class="audio-level-bar">
+      <div 
+        class="audio-level-fill" 
+        [style.width.%]="(audioLevel / 255) * 100">
+      </div>
+    </div>
+    <span class="level-value">{{ Math.round((audioLevel / 255) * 100) }}%</span>
+  </div>
+  
+  <!-- Recording Instructions -->
+  <div class="instructions" *ngIf="!isRecording && isConnected">
+    <mat-icon>info</mat-icon>
+    <p>
+      Presiona el botón del micrófono para iniciar la grabación. 
+      El audio se transcribirá y traducirá automáticamente en tiempo real.
+    </p>
+  </div>
+  
+</div>
