@@ -19,7 +19,8 @@
     "node-record-lpcm16": "^1.0.1",
     "wav": "^1.0.2",
     "fluent-ffmpeg": "^2.1.2",
-    "dotenv": "^16.3.1"
+    "dotenv": "^16.3.1",
+    "uuid": "^9.0.1"
   },
   "devDependencies": {
     "nodemon": "^3.0.2"
