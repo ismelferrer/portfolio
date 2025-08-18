@@ -25,6 +25,11 @@ backend/
 
 ## Endpoints del API
 
+La documentación interactiva y el esquema OpenAPI están disponibles en:
+
+- UI: `http://localhost:3000/docs`
+- Esquema JSON: `http://localhost:3000/docs.json`
+
 ### 1. WebSocket - Transcripción en Tiempo Real
 
 **Conexión**: `ws://localhost:3000`

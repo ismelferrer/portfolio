@@ -10,6 +10,8 @@ import { fileURLToPath } from 'url';
 import dotenv from 'dotenv';
 import ffmpeg from 'fluent-ffmpeg';
 import { v4 as uuidv4 } from 'uuid';
+import swaggerUi from 'swagger-ui-express';
+import { swaggerSpec } from './swagger.js';
 
 dotenv.config();
 
@@ -23,6 +25,8 @@ const wss = new WebSocketServer({ server });
 // Middleware
 app.use(cors());
 app.use(express.json());
+app.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec, { explorer: true }));
+app.get('/docs.json', (req, res) => res.json(swaggerSpec));
 
 // Configure multer for audio file uploads
 const storage = multer.diskStorage({
@@ -363,12 +367,89 @@ async function getAvailableModels(ws) {
 
 // REST API endpoints
 
+/**
+ * @openapi
+ * /health:
+ *   get:
+ *     summary: Verificar estado del servicio
+ *     description: Endpoint de salud que confirma que el backend está activo.
+ *     tags:
+ *       - Sistema
+ *     responses:
+ *       200:
+ *         description: Estado OK
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   example: OK
+ *                 timestamp:
+ *                   type: string
+ *                   format: date-time
+ */
+
 // Health check
 app.get('/health', (req, res) => {
   res.json({ status: 'OK', timestamp: new Date().toISOString() });
 });
 
-// Upload audio file for transcription
+/**
+ * @openapi
+ * /transcribe:
+ *   post:
+ *     summary: Subir audio para transcripción y traducción opcional
+ *     description: Acepta un archivo de audio, lo convierte a MP3, lo transcribe y opcionalmente lo traduce.
+ *     tags:
+ *       - Transcripción
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         multipart/form-data:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               audio:
+ *                 type: string
+ *                 format: binary
+ *                 description: Archivo de audio (WAV, MP3, etc.)
+ *               targetLanguage:
+ *                 type: string
+ *                 description: Idioma objetivo para traducción automática
+ *                 example: en
+ *     responses:
+ *       200:
+ *         description: Transcripción realizada
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 transcription:
+ *                   type: string
+ *                 audioFile:
+ *                   type: string
+ *                   description: Nombre del archivo MP3 generado
+ *                 translation:
+ *                   type: object
+ *                   nullable: true
+ *                   properties:
+ *                     translatedText:
+ *                       type: string
+ *                     targetLanguage:
+ *                       type: string
+ *                 timestamp:
+ *                   type: string
+ *                   format: date-time
+ *                 originalFile:
+ *                   type: string
+ *       400:
+ *         description: Solicitud inválida (archivo faltante)
+ *       500:
+ *         description: Error en el proceso de transcripción
+ */
 app.post('/transcribe', upload.single('audio'), async (req, res) => {
   try {
     if (!req.file) {
@@ -446,7 +527,41 @@ Translation:`;
   }
 });
 
-// Translate text
+/**
+ * @openapi
+ * /translate:
+ *   post:
+ *     summary: Traducir texto
+ *     description: Traduce el texto proporcionado desde un idioma de origen (o detectado automáticamente) hacia un idioma objetivo utilizando Ollama.
+ *     tags:
+ *       - Traducción
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [text]
+ *             properties:
+ *               text:
+ *                 type: string
+ *                 description: Texto a traducir
+ *               targetLanguage:
+ *                 type: string
+ *                 description: Idioma objetivo
+ *                 example: en
+ *               sourceLanguage:
+ *                 type: string
+ *                 description: Idioma de origen o 'auto'
+ *                 example: auto
+ *     responses:
+ *       200:
+ *         description: Traducción generada
+ *       400:
+ *         description: Falta el texto a traducir
+ *       500:
+ *         description: Error al traducir
+ */
 app.post('/translate', async (req, res) => {
   try {
     const { text, targetLanguage = 'en', sourceLanguage = 'auto' } = req.body;
@@ -483,7 +598,33 @@ Translation:`;
   }
 });
 
-// Serve audio files
+/**
+ * @openapi
+ * /audio/{filename}:
+ *   get:
+ *     summary: Descargar archivo de audio generado
+ *     tags:
+ *       - Archivos
+ *     parameters:
+ *       - in: path
+ *         name: filename
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Nombre del archivo MP3 o WAV
+ *     responses:
+ *       200:
+ *         description: Archivo de audio
+ *         content:
+ *           audio/mpeg:
+ *             schema:
+ *               type: string
+ *               format: binary
+ *       400:
+ *         description: Nombre de archivo inválido
+ *       404:
+ *         description: Archivo no encontrado
+ */
 app.get('/audio/:filename', (req, res) => {
   try {
     const filename = req.params.filename;
@@ -512,7 +653,39 @@ app.get('/audio/:filename', (req, res) => {
   }
 });
 
-// List available audio files
+/**
+ * @openapi
+ * /audio:
+ *   get:
+ *     summary: Listar archivos de audio disponibles
+ *     tags:
+ *       - Archivos
+ *     responses:
+ *       200:
+ *         description: Lista de archivos
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 files:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       filename:
+ *                         type: string
+ *                       size:
+ *                         type: integer
+ *                       created:
+ *                         type: string
+ *                         format: date-time
+ *                       modified:
+ *                         type: string
+ *                         format: date-time
+ *       500:
+ *         description: Error al listar archivos
+ */
 app.get('/audio', (req, res) => {
   try {
     const files = fs.readdirSync(audioDir)
@@ -537,7 +710,17 @@ app.get('/audio', (req, res) => {
   }
 });
 
-// Get available languages
+/**
+ * @openapi
+ * /languages:
+ *   get:
+ *     summary: Obtener idiomas disponibles
+ *     tags:
+ *       - Sistema
+ *     responses:
+ *       200:
+ *         description: Lista de idiomas soportados
+ */
 app.get('/languages', (req, res) => {
   const languages = [
     { code: 'es', name: 'Español' },
@@ -555,7 +738,19 @@ app.get('/languages', (req, res) => {
   res.json(languages);
 });
 
-// Get Ollama models
+/**
+ * @openapi
+ * /models:
+ *   get:
+ *     summary: Obtener modelos disponibles en Ollama
+ *     tags:
+ *       - Sistema
+ *     responses:
+ *       200:
+ *         description: Lista de modelos
+ *       500:
+ *         description: Error al consultar modelos
+ */
 app.get('/models', async (req, res) => {
   try {
     const response = await axios.get(`${OLLAMA_URL}/api/tags`);
